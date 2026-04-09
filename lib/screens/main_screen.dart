@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../widgets/green_accent_bar.dart';
 import 'dashboard/dashboard_screen.dart';
+import '../screens/vehicles/vehicle_screen.dart';
+import '../screens/services/services_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -15,8 +17,8 @@ class _MainScreenState extends State<MainScreen> {
 
   final _screens = const [
     DashboardScreen(),
-    Center(child: Text('Vehicles', style: TextStyle(color: AppColors.white))),
-    Center(child: Text('Services', style: TextStyle(color: AppColors.white))),
+    VehiclesScreen(), 
+    ServicesScreen(),
   ];
 
   @override
