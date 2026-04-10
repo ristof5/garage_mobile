@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import '../../models/vehicle_model.dart';
 import '../../models/service_model.dart';
 import '../../services/service_service.dart';
+import '../../services/auth_provider.dart';
+import '../../services/vehicle_service.dart';
+import 'vehicle_form_screen.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/green_accent_bar.dart';
 
@@ -44,6 +47,54 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
     }
   }
 
+  Future<void> _confirmDelete() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.nearBlack,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(2),
+          side: const BorderSide(color: AppColors.borderSubtle),
+        ),
+        title: Text('Hapus Kendaraan', style: AppTextStyles.cardTitle),
+        content: Text(
+          'Hapus ${widget.vehicle.fullName}? Semua riwayat servisnya juga akan terpengaruh.',
+          style: AppTextStyles.bodySecondary,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('BATAL'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.error,
+              foregroundColor: AppColors.white,
+            ),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('HAPUS'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
+    try {
+      await VehicleService().deleteVehicle(widget.vehicle.id);
+      if (mounted) Navigator.pop(context, true);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString().replaceAll('Exception: ', '')),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    }
+  }
+
   // Total biaya servis kendaraan ini
   int get _totalCost => _services.fold(0, (sum, s) => sum + s.cost);
 
@@ -56,6 +107,32 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
           preferredSize: Size.fromHeight(2),
           child: GreenAccentBar(),
         ),
+        actions: AuthProvider.isAdmin
+            ? [
+                // Edit
+                IconButton(
+                  icon: const Icon(Icons.edit_outlined, color: AppColors.green),
+                  onPressed: () async {
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            VehicleFormScreen(vehicle: widget.vehicle),
+                      ),
+                    );
+                    if (result == true && mounted) Navigator.pop(context, true);
+                  },
+                ),
+                // Hapus
+                IconButton(
+                  icon: const Icon(
+                    Icons.delete_outline,
+                    color: AppColors.error,
+                  ),
+                  onPressed: _confirmDelete,
+                ),
+              ]
+            : null,
       ),
       body: RefreshIndicator(
         color: AppColors.green,

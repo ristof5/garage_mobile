@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../models/vehicle_model.dart';
 import '../../services/vehicle_service.dart';
+import '../../services/auth_provider.dart';
 import '../../theme/app_theme.dart';
 import 'vehicle_detail_screen.dart';
+import 'vehicle_form_screen.dart';
 
 class VehiclesScreen extends StatefulWidget {
   const VehiclesScreen({super.key});
@@ -41,17 +43,38 @@ class _VehiclesScreenState extends State<VehiclesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return RefreshIndicator(
-      color: AppColors.green,
-      backgroundColor: AppColors.nearBlack,
-      onRefresh: _loadVehicles,
-      child: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(color: AppColors.green),
+    return Scaffold(
+      body: RefreshIndicator(
+        color: AppColors.green,
+        backgroundColor: AppColors.nearBlack,
+        onRefresh: _loadVehicles,
+        child: _isLoading
+            ? const Center(
+                child: CircularProgressIndicator(color: AppColors.green),
+              )
+            : _error != null
+            ? _buildError()
+            : _buildList(),
+      ),
+
+      // FAB hanya untuk admin
+      floatingActionButton: AuthProvider.isAdmin
+          ? FloatingActionButton(
+              backgroundColor: AppColors.green,
+              foregroundColor: AppColors.black,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(2),
+              ),
+              onPressed: () async {
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const VehicleFormScreen()),
+                );
+                if (result == true) _loadVehicles();
+              },
+              child: const Icon(Icons.add),
             )
-          : _error != null
-          ? _buildError()
-          : _buildList(),
+          : null,
     );
   }
 
