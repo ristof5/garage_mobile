@@ -3,6 +3,7 @@ import '../../models/service_model.dart';
 import '../../models/vehicle_model.dart';
 import '../../services/vehicle_service.dart';
 import '../../services/service_service.dart';
+import '../../services/auth_provider.dart';
 import '../../theme/app_theme.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -146,18 +147,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildGreeting() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('GARAGE', style: AppTextStyles.label),
-        const SizedBox(height: 4),
-        Text('Dashboard', style: AppTextStyles.displayHero),
-        const SizedBox(height: 4),
-        Text('Ringkasan data kendaraan & servis',
-            style: AppTextStyles.bodySecondary),
-      ],
-    );
-  }
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text('GARAGE', style: AppTextStyles.label),
+      const SizedBox(height: 4),
+      Text('Dashboard', style: AppTextStyles.displayHero),
+      const SizedBox(height: 4),
+      Text(
+        'Role: ${AuthProvider.role ?? "unknown"}', // ← sementara untuk test
+        style: AppTextStyles.bodySecondary,
+      ),
+    ],
+  );
+}
 
   Widget _buildEmpty(String msg) {
     return Container(

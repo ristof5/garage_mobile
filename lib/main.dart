@@ -2,16 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'screens/auth/login_screen.dart';
 import 'theme/app_theme.dart';
+import 'services/auth_provider.dart';
+import 'screens/main_screen.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Status bar transparan agar nyambung dengan AppBar hitam
+
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.light,
     ),
   );
+
+  // Load token & role dari storage
+  await AuthProvider.load();
+
   runApp(const MyApp());
 }
 
@@ -24,7 +30,10 @@ class MyApp extends StatelessWidget {
       title: 'Garage Mobile',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.dark,
-      home: const LoginScreen(),
+      // Kalau sudah login langsung ke MainScreen
+      home: AuthProvider.isLoggedIn
+          ? const MainScreen()
+          : const LoginScreen(),
     );
   }
 }

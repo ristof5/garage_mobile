@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:garage_mobile/services/auth_provider.dart';
 import '../../services/auth_service.dart';
+import '../../services/auth_provider.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/green_accent_bar.dart';
 import '../main_screen.dart';
@@ -37,6 +39,8 @@ class _LoginScreenState extends State<LoginScreen> {
         _usernameController.text.trim(),
         _passwordController.text.trim(),
       );
+
+      await AuthProvider.load();
 
       if (mounted) {
         Navigator.of(context).pushReplacement(
